@@ -50,20 +50,22 @@ jobs:
 
   test-docker:
     needs: docker
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
       - name: Login no Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      - name: Rodar testes dentro do Container
-        run: docker run ${{ vars.DOCKER_USER }}/pipeline-ci:latest pytest
+      - name: Subir ambiente de teste
+        run: docker compose up -d
 
-  deploy:
-    needs: [test-docker]
-    runs-on: ubuntu-latest
-    
-    steps:
-      - run: echo "Deploy Enviado"
+      - name: Validar comunicação (ping)
+        run: docker compose exec -T calculadora-app ping -c 1 servico-vizinho
+
+      - name: Rodar testes unitários (pytest)
+        run: docker compose exec -T calculadora-app pytest -v
