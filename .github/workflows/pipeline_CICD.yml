@@ -52,7 +52,7 @@ jobs:
       - name: Login no Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USER }}
+          username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
 
@@ -61,7 +61,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USER }}/pipeline-ci:latest
+          tags: ${{ vars.DOCKER_USER }}/pipeline-ci:latest
 
   test-docker:
     needs: docker
@@ -70,11 +70,11 @@ jobs:
       - name: Login no Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USER }}
+          username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Rodar testes dentro do Container
-        run: docker run ${{ secrets.DOCKER_USER }}/pipeline-ci:latest pytest
+        run: docker run ${{ vars.DOCKER_USER }}/pipeline-ci:latest pytest
 
   deploy:
     needs: [test-docker]
