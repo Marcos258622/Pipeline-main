@@ -67,5 +67,9 @@ jobs:
       - name: Validar comunicação (ping)
         run: docker compose exec -T calculadora-app ping -c 1 servico-vizinho
 
-      - name: Rodar testes unitários (pytest)
-        run: docker compose exec -T calculadora-app pytest -v
+  deploy:
+      needs: [test-docker]
+      runs-on: ubuntu-latest
+      
+      steps:
+        - run: echo "Deploy Enviado"

@@ -3,37 +3,38 @@ services:
   calculadora-app:
     build: .
     image: marcosvinirocha/pipeline-main:latest
-    # O app.py só define funções e termina na hora; este comando mantém o contêiner no ar
     command: sleep infinity
-    environment:
-      DB_HOST: db
-      DB_USER: user_fatec
-      DB_PASSWORD: password_fatec
-      DB_NAME: calculadora
-    depends_on:
-      db:
-        condition: service_healthy
 
   # Serviço auxiliar (o nosso vizinho de teste)
   servico-vizinho:
     image: alpine
     command: sleep infinity
 
-  # Banco de dados PostgreSQL
+  # Banco de dados MariaDB
   db:
-    image: postgres:16-alpine
+    image: mariadb:10.6
     restart: always
     environment:
-      POSTGRES_USER: user_fatec
-      POSTGRES_PASSWORD: password_fatec
-      POSTGRES_DB: calculadora
+      MYSQL_ROOT_PASSWORD: fatec_password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: user_fatec
+      MYSQL_PASSWORD: password_fatec
     volumes:
-      - db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user_fatec -d calculadora"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - db_data:/var/lib/mysql
+
+  # WordPress (depende do banco)
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user_fatec
+      WORDPRESS_DB_PASSWORD: password_fatec
+      WORDPRESS_DB_NAME: wordpress
 
 volumes:
   db_data:
