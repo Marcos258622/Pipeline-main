@@ -5,7 +5,35 @@ services:
     image: marcosvinirocha/pipeline-main:latest
     # O app.py só define funções e termina na hora; este comando mantém o contêiner no ar
     command: sleep infinity
+    environment:
+      DB_HOST: db
+      DB_USER: user_fatec
+      DB_PASSWORD: password_fatec
+      DB_NAME: calculadora
+    depends_on:
+      db:
+        condition: service_healthy
+
   # Serviço auxiliar (o nosso vizinho de teste)
   servico-vizinho:
     image: alpine
     command: sleep infinity
+
+  # Banco de dados PostgreSQL
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: user_fatec
+      POSTGRES_PASSWORD: password_fatec
+      POSTGRES_DB: calculadora
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_fatec -d calculadora"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_data:
