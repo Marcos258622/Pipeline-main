@@ -36,20 +36,17 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-
       - name: Login no Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
+      - name: Build com Docker Compose
+        run: docker compose build
 
-      - name: Build e Push da Imagem
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ vars.DOCKER_USER }}/pipeline-ci:latest
+      - name: Push com Docker Compose
+        run: docker compose push calculadora-app
 
   test-docker:
     needs: docker
