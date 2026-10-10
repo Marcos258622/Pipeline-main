@@ -1,0 +1,11 @@
+services:
+  # Serviço da calculadora (o nosso código)
+  calculadora-app:
+    build: .
+    image: marcosvinirocha/pipeline-main:latest
+    # O app.py só define funções e termina na hora; este comando mantém o contêiner no ar
+    command: sleep infinity
+  # Serviço auxiliar (o nosso vizinho de teste)
+  servico-vizinho:
+    image: alpine
+    command: sleep infinity
