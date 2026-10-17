@@ -3,7 +3,10 @@ services:
   calculadora-app:
     build: .
     image: marcosvinirocha/pipeline-main:latest
+    # O app.py só define funções e termina na hora; este comando mantém o contêiner no ar
     command: sleep infinity
+    depends_on:
+      - db
 
   # Serviço auxiliar (o nosso vizinho de teste)
   servico-vizinho:
